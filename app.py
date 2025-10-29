@@ -175,30 +175,34 @@ if search_button and query:
     if not api_key:
         st.error("❌ Por favor, configure sua ANTHROPIC_API_KEY na sidebar")
     else:
-        # Progress tracking
-        progress_bar = st.progress(0)
-        status_text = st.empty()
-
         try:
-            status_text.text("🎯 Inicializando agente...")
-            progress_bar.progress(10)
+            # Status container com feedback visual
+            with st.status("🔬 Executando pesquisa...", expanded=True) as status_container:
+                st.write("🎯 Inicializando agente...")
 
-            # Inicializa o agente
-            agent = ResearchAgent(
-                anthropic_api_key=api_key,
-                tavily_api_key=tavily_key if use_tavily else None,
-                max_iterations=max_iterations
-            )
+                # Inicializa o agente
+                agent = ResearchAgent(
+                    anthropic_api_key=api_key,
+                    tavily_api_key=tavily_key if use_tavily else None,
+                    max_iterations=max_iterations
+                )
 
-            status_text.text("🔍 Planejando pesquisa...")
-            progress_bar.progress(20)
+                st.write("✅ Agente inicializado")
+                st.write("🔍 Executando pesquisa (isso pode levar alguns segundos)...")
 
-            # Executa a pesquisa
-            with st.spinner("Pesquisando e validando informações..."):
+                # Executa a pesquisa
                 result = agent.research(query=query, max_iterations=max_iterations)
 
-            progress_bar.progress(100)
-            status_text.text("✅ Pesquisa concluída!")
+                st.write("✅ Pesquisa concluída!")
+
+                # Exibe log de execução
+                if 'full_state' in result and 'messages' in result['full_state']:
+                    st.write("---")
+                    st.write("📋 **Log de Execução:**")
+                    for msg in result['full_state']['messages']:
+                        st.text(msg)
+
+                status_container.update(label="✅ Pesquisa concluída!", state="complete", expanded=False)
 
             # Salva no histórico
             result['query'] = query
@@ -206,18 +210,12 @@ if search_button and query:
             st.session_state.history.append(result)
             st.session_state.current_result = result
 
-            # Limpa barra de progresso após 1 segundo
-            import time
-            time.sleep(1)
-            progress_bar.empty()
-            status_text.empty()
-
             st.rerun()
 
         except Exception as e:
             st.error(f"❌ Erro durante a pesquisa: {str(e)}")
-            progress_bar.empty()
-            status_text.empty()
+            import traceback
+            st.code(traceback.format_exc())
 
 # Exibir resultados
 if st.session_state.current_result:
@@ -227,7 +225,7 @@ if st.session_state.current_result:
     st.markdown("## 📋 Resultados da Pesquisa")
 
     # Tabs para organizar informações
-    tab1, tab2, tab3, tab4 = st.tabs(["📄 Relatório", "📚 Referências", "📊 Análise", "🔍 Detalhes"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📄 Relatório", "📚 Referências", "📊 Análise", "📋 Logs", "🔍 Detalhes"])
 
     with tab1:
         st.markdown("### Relatório Final")
@@ -303,13 +301,69 @@ if st.session_state.current_result:
             fig_metrics.update_layout(height=300, showlegend=False)
             st.plotly_chart(fig_metrics, use_container_width=True)
 
-        # Timeline (simulado)
-        if 'full_state' in result and 'messages' in result['full_state']:
-            st.markdown("### 📝 Log de Execução")
-            for i, msg in enumerate(result['full_state']['messages']):
-                st.text(f"[{i+1}] {msg}")
-
     with tab4:
+        st.markdown("### 📋 Log de Execução")
+        st.markdown("Acompanhe passo a passo o que o agente fez durante a pesquisa:")
+
+        if 'full_state' in result and 'messages' in result['full_state']:
+            messages = result['full_state']['messages']
+
+            # Container com scroll para logs longos
+            log_container = st.container()
+            with log_container:
+                # Agrupa mensagens por tipo de operação
+                current_section = None
+
+                for msg in messages:
+                    # Detecta início de nova seção
+                    if msg.startswith("🎯"):
+                        current_section = "plan"
+                        st.markdown(f"#### {msg}")
+                    elif msg.startswith("🔍"):
+                        current_section = "search"
+                        st.markdown(f"#### {msg}")
+                    elif msg.startswith("✅") and "VALIDANDO" in msg:
+                        current_section = "validate"
+                        st.markdown(f"#### {msg}")
+                    elif msg.startswith("📝"):
+                        current_section = "synthesize"
+                        st.markdown(f"#### {msg}")
+                    else:
+                        # Mensagens de detalhe
+                        if msg.strip().startswith("✓"):
+                            st.success(msg.strip())
+                        elif msg.strip().startswith("⚠️"):
+                            st.warning(msg.strip())
+                        elif msg.strip().startswith("→"):
+                            st.info(msg.strip())
+                        else:
+                            st.text(msg)
+
+            # Estatísticas do log
+            st.markdown("---")
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Total de Mensagens", len(messages))
+            with col2:
+                success_msgs = len([m for m in messages if "✓" in m])
+                st.metric("Operações Bem-sucedidas", success_msgs)
+            with col3:
+                warning_msgs = len([m for m in messages if "⚠️" in m])
+                st.metric("Avisos", warning_msgs)
+
+            # Opção de download dos logs
+            log_text = "\n".join(messages)
+            st.download_button(
+                label="⬇️ Baixar Logs",
+                data=log_text,
+                file_name=f"logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
+                mime="text/plain"
+            )
+
+        else:
+            st.info("Nenhum log disponível para esta pesquisa")
+
+    with tab5:
         st.markdown("### Informações Técnicas")
 
         # Estado completo

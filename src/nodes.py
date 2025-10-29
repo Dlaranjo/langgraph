@@ -48,9 +48,17 @@ Retorne apenas as queries, uma por linha, sem numeração ou formatação extra.
 
         queries = [q.strip() for q in response.content.strip().split('\n') if q.strip()]
 
+        # Mensagens de log detalhadas
+        log_messages = [
+            f"🎯 PLANEJANDO PESQUISA: {state['query']}",
+            f"✓ {len(queries)} queries de busca geradas:"
+        ]
+        for i, q in enumerate(queries, 1):
+            log_messages.append(f"  {i}. {q}")
+
         return {
             "search_queries": queries,
-            "messages": [f"Planejamento completo: {len(queries)} queries geradas"],
+            "messages": log_messages,
             "current_iteration": 0
         }
 
@@ -58,9 +66,11 @@ Retorne apenas as queries, uma por linha, sem numeração ou formatação extra.
         """
         Nó de busca: executa as queries e coleta resultados
         """
-        print(f"\n🔍 BUSCANDO INFORMAÇÕES ({len(state.get('search_queries', []))} queries)")
+        queries = state.get('search_queries', [])
+        print(f"\n🔍 BUSCANDO INFORMAÇÕES ({len(queries)} queries)")
 
         search_results = []
+        log_messages = [f"🔍 BUSCANDO INFORMAÇÕES ({len(queries)} queries)"]
 
         # Verifica se deve usar Tavily ou simulação
         use_tavily = self.tavily_key and self.tavily_key != "sua-chave-tavily-aqui"
@@ -71,8 +81,9 @@ Retorne apenas as queries, uma por linha, sem numeração ou formatação extra.
                 from tavily import TavilyClient
                 tavily_client = TavilyClient(api_key=self.tavily_key)
                 print("  🌐 Usando Tavily API (busca real)")
+                log_messages.append("  🌐 Usando Tavily API (busca real)")
 
-                for query in state.get('search_queries', []):
+                for query in queries:
                     try:
                         # Busca real
                         response = tavily_client.search(
@@ -82,6 +93,7 @@ Retorne apenas as queries, uma por linha, sem numeração ou formatação extra.
                         )
 
                         # Processa resultados
+                        num_results = len(response.get('results', []))
                         for item in response.get('results', []):
                             result = SearchResult(
                                 source=item.get('url', 'N/A'),
@@ -92,29 +104,43 @@ Retorne apenas as queries, uma por linha, sem numeração ou formatação extra.
                             )
                             search_results.append(result)
 
-                        print(f"  ✓ Busca real: {query[:60]}... ({len(response.get('results', []))} resultados)")
+                        log_msg = f"  ✓ Busca real: \"{query[:60]}...\" ({num_results} resultados)"
+                        print(log_msg)
+                        log_messages.append(log_msg)
 
                     except Exception as e:
-                        print(f"  ⚠️  Erro na busca '{query}': {e}")
+                        error_msg = f"  ⚠️  Erro na busca '{query}': {e}"
+                        print(error_msg)
+                        log_messages.append(error_msg)
                         # Fallback para simulação em caso de erro
                         result = self._simulate_search(query)
                         search_results.append(result)
+                        log_messages.append(f"  → Usando simulação como fallback")
 
             except ImportError:
-                print("  ⚠️  Tavily não instalado, usando simulação")
+                fallback_msg = "  ⚠️  Tavily não instalado, usando simulação"
+                print(fallback_msg)
+                log_messages.append(fallback_msg)
                 use_tavily = False
 
         if not use_tavily:
             # Simulação com LLM
-            print("  🤖 Usando simulação com LLM")
-            for query in state.get('search_queries', []):
+            sim_msg = "  🤖 Usando simulação com LLM"
+            print(sim_msg)
+            log_messages.append(sim_msg)
+
+            for query in queries:
                 result = self._simulate_search(query)
                 search_results.append(result)
-                print(f"  ✓ Busca simulada: {query[:60]}...")
+                log_msg = f"  ✓ Busca simulada: \"{query[:60]}...\""
+                print(log_msg)
+                log_messages.append(log_msg)
+
+        log_messages.append(f"✓ Total: {len(search_results)} resultados coletados")
 
         return {
             "search_results": search_results,
-            "messages": [f"Busca completa: {len(search_results)} resultados coletados"]
+            "messages": log_messages
         }
 
     def _simulate_search(self, query: str) -> SearchResult:
@@ -142,10 +168,12 @@ Seja específico e inclua detalhes verificáveis."""
         Nó de validação: cruza informações e detecta conflitos
         """
         print(f"\n✅ VALIDANDO INFORMAÇÕES")
+        log_messages = ["✅ VALIDANDO INFORMAÇÕES"]
 
         results = state.get('search_results', [])
         if not results:
-            return {"validations": [], "conflicts_detected": False}
+            log_messages.append("  ⚠️  Nenhum resultado para validar")
+            return {"validations": [], "conflicts_detected": False, "messages": log_messages}
 
         # Extrai claims principais de cada resultado
         all_content = "\n\n---\n\n".join([
@@ -201,22 +229,38 @@ Retorne um JSON com este formato:
 
             conflicts = validation_data.get('conflicts_detected', False)
 
-            print(f"  ✓ {len(validations)} afirmações validadas")
+            log_msg_valid = f"  ✓ {len(validations)} afirmações validadas"
+            print(log_msg_valid)
+            log_messages.append(log_msg_valid)
+
             if conflicts:
-                print(f"  ⚠️  Conflitos detectados!")
+                conflict_msg = "  ⚠️  Conflitos detectados!"
+                print(conflict_msg)
+                log_messages.append(conflict_msg)
+            else:
+                no_conflict_msg = "  ✓ Sem conflitos detectados"
+                log_messages.append(no_conflict_msg)
+
+            # Adiciona resumo das validações
+            for i, val in enumerate(validations, 1):
+                log_messages.append(f"    {i}. {val.claim[:60]}... (confiança: {val.confidence:.0%})")
+
+            log_messages.append(validation_data.get('summary', 'Validação completa'))
 
             return {
                 "validations": validations,
                 "conflicts_detected": conflicts,
-                "messages": [validation_data.get('summary', 'Validação completa')]
+                "messages": log_messages
             }
 
         except json.JSONDecodeError as e:
-            print(f"  ⚠️  Erro ao parsear validação: {e}")
+            error_msg = f"  ⚠️  Erro ao parsear validação: {e}"
+            print(error_msg)
+            log_messages.append(error_msg)
             return {
                 "validations": [],
                 "conflicts_detected": False,
-                "messages": ["Erro na validação - usando resposta como texto"],
+                "messages": log_messages,
                 "error": str(e)
             }
 
@@ -225,9 +269,13 @@ Retorne um JSON com este formato:
         Nó de síntese: cria relatório final com referências
         """
         print(f"\n📝 SINTETIZANDO RELATÓRIO FINAL")
+        log_messages = ["📝 SINTETIZANDO RELATÓRIO FINAL"]
 
         results = state.get('search_results', [])
         validations = state.get('validations', [])
+
+        log_messages.append(f"  → Processando {len(results)} fontes")
+        log_messages.append(f"  → Integrando {len(validations)} validações")
 
         # Prepara contexto para síntese
         sources_summary = "\n\n".join([
@@ -275,13 +323,17 @@ Formato do relatório: Markdown profissional"""
             for r in results
         ]
 
-        print(f"  ✓ Relatório gerado (confiança: {avg_confidence:.0%})")
+        final_msg = f"  ✓ Relatório gerado (confiança: {avg_confidence:.0%})"
+        print(final_msg)
+        log_messages.append(final_msg)
+        log_messages.append(f"  ✓ {len(references)} referências incluídas")
+        log_messages.append("✅ Síntese completa")
 
         return {
             "final_report": response.content,
             "references": references,
             "confidence_level": avg_confidence,
-            "messages": ["Síntese completa"]
+            "messages": log_messages
         }
 
     def decide_next_step(self, state: ResearchState) -> str:
