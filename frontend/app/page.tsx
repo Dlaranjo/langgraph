@@ -199,8 +199,34 @@ export default function Home() {
                     </TabsList>
 
                     <TabsContent value="report" className="space-y-4">
-                      <div className="prose prose-purple max-w-none prose-headings:text-purple-900 prose-a:text-purple-600 prose-strong:text-purple-800">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      <div className="prose prose-lg prose-purple max-w-none prose-headings:font-bold prose-headings:text-purple-900 prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-p:text-gray-700 prose-a:text-purple-600 prose-a:underline hover:prose-a:text-purple-800 prose-strong:text-purple-800 prose-strong:font-bold prose-ul:list-disc prose-ol:list-decimal prose-li:text-gray-700 prose-code:text-purple-700 prose-code:bg-purple-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-blockquote:border-l-purple-500 prose-blockquote:italic">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            h1: ({node, ...props}) => <h1 className="text-4xl font-bold text-purple-900 mt-8 mb-4" {...props} />,
+                            h2: ({node, ...props}) => <h2 className="text-3xl font-bold text-purple-800 mt-6 mb-3" {...props} />,
+                            h3: ({node, ...props}) => <h3 className="text-2xl font-semibold text-purple-700 mt-4 mb-2" {...props} />,
+                            h4: ({node, ...props}) => <h4 className="text-xl font-semibold text-purple-600 mt-3 mb-2" {...props} />,
+                            p: ({node, ...props}) => <p className="text-gray-700 leading-relaxed mb-4" {...props} />,
+                            ul: ({node, ...props}) => <ul className="list-disc list-inside mb-4 space-y-2" {...props} />,
+                            ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-4 space-y-2" {...props} />,
+                            li: ({node, ...props}) => <li className="text-gray-700 ml-4" {...props} />,
+                            strong: ({node, ...props}) => <strong className="font-bold text-purple-800" {...props} />,
+                            em: ({node, ...props}) => <em className="italic text-gray-700" {...props} />,
+                            a: ({node, ...props}) => <a className="text-purple-600 underline hover:text-purple-800 transition-colors" {...props} target="_blank" rel="noopener noreferrer" />,
+                            code: ({node, inline, ...props}: any) =>
+                              inline
+                                ? <code className="bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
+                                : <code className="block bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto font-mono text-sm" {...props} />,
+                            pre: ({node, ...props}) => <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto mb-4" {...props} />,
+                            blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-purple-500 pl-4 italic text-gray-600 my-4" {...props} />,
+                            hr: ({node, ...props}) => <hr className="border-gray-300 my-8" {...props} />,
+                            table: ({node, ...props}) => <div className="overflow-x-auto mb-4"><table className="min-w-full border-collapse border border-gray-300" {...props} /></div>,
+                            thead: ({node, ...props}) => <thead className="bg-purple-100" {...props} />,
+                            th: ({node, ...props}) => <th className="border border-gray-300 px-4 py-2 text-left font-semibold text-purple-900" {...props} />,
+                            td: ({node, ...props}) => <td className="border border-gray-300 px-4 py-2 text-gray-700" {...props} />,
+                          }}
+                        >
                           {result.report}
                         </ReactMarkdown>
                       </div>
