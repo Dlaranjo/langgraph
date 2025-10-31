@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -197,8 +199,10 @@ export default function Home() {
                     </TabsList>
 
                     <TabsContent value="report" className="space-y-4">
-                      <div className="prose prose-purple max-w-none">
-                        <div className="whitespace-pre-wrap">{result.report}</div>
+                      <div className="prose prose-purple max-w-none prose-headings:text-purple-900 prose-a:text-purple-600 prose-strong:text-purple-800">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {result.report}
+                        </ReactMarkdown>
                       </div>
                     </TabsContent>
 
