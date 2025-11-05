@@ -139,9 +139,9 @@ export default function Home() {
             {/* Search Card */}
             <Card>
               <CardHeader>
-                <CardTitle>💭 Faça sua pergunta</CardTitle>
+                <CardTitle>💡 Pesquise com inteligência</CardTitle>
                 <CardDescription>
-                  Digite uma pergunta e pressione Enter (ou clique no botão) para pesquisar
+                  IA que busca, valida e sintetiza informações de múltiplas fontes automaticamente
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -224,7 +224,7 @@ export default function Home() {
                             li: ({node, ...props}) => <li className="text-[15px] text-gray-700 dark:text-gray-300 leading-7" {...props} />,
                             strong: ({node, ...props}) => <strong className="font-semibold text-gray-900 dark:text-gray-100" {...props} />,
                             em: ({node, ...props}) => <em className="italic text-gray-700 dark:text-gray-300" {...props} />,
-                            a: ({node, ...props}) => <a className="text-purple-600 dark:text-purple-400 underline hover:text-purple-800 dark:hover:text-purple-300 transition-colors" {...props} target="_blank" rel="noopener noreferrer" />,
+                            a: ({node, ...props}) => <a className="text-purple-600 dark:text-purple-400 underline hover:text-purple-800 dark:hover:text-purple-300 transition-colors break-all" {...props} target="_blank" rel="noopener noreferrer" />,
                             code: ({node, inline, ...props}: any) =>
                               inline
                                 ? <code className="bg-gray-100 dark:bg-gray-800 text-purple-600 dark:text-purple-400 px-1.5 py-0.5 rounded text-[13px] font-mono" {...props} />
@@ -253,17 +253,17 @@ export default function Home() {
                               </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-2">
-                              <p className="text-sm">
+                              <div className="text-sm">
                                 <strong>URL:</strong>{" "}
                                 <a
                                   href={ref.source || ref.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-primary hover:underline"
+                                  className="text-primary hover:underline break-all"
                                 >
                                   {ref.source || ref.url}
                                 </a>
-                              </p>
+                              </div>
                               {ref.relevance_score !== undefined && (
                                 <div className="space-y-1">
                                   <p className="text-sm font-semibold">

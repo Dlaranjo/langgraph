@@ -1,0 +1,111 @@
+# ========================================
+# TERRAFORM VARIABLES - EXEMPLO
+# Copie este arquivo para terraform.tfvars e preencha com seus valores
+# ========================================
+
+# ----------------------------------------
+# Configurações Gerais
+# ----------------------------------------
+
+project_name = "langgraph-research-agent"
+environment  = "prod"
+aws_region   = "us-east-1"  # us-east-1 é mais barato
+
+# ----------------------------------------
+# Rede (VPC)
+# ----------------------------------------
+
+vpc_cidr           = "10.0.0.0/16"
+public_subnet_cidr = "10.0.1.0/24"
+availability_zone  = "us-east-1a"
+
+# ----------------------------------------
+# EC2 (Backend)
+# ----------------------------------------
+
+ec2_instance_type = "t2.micro"  # Free Tier
+ec2_key_pair_name = "langgraph-key"  # IMPORTANTE: Crie este key pair no AWS Console primeiro!
+
+# IPs permitidos para SSH
+# ⚠️ IMPORTANTE: Mude para seu IP público!
+# Descubra seu IP: curl ifconfig.me
+allowed_ssh_ips = [
+  "0.0.0.0/0"  # ⚠️ INSEGURO! Mude para seu IP: "123.456.789.0/32"
+]
+
+# ----------------------------------------
+# API Keys (SENSÍVEL!)
+# ----------------------------------------
+
+# Chave Anthropic Claude (obrigatória)
+# Obtenha em: https://console.anthropic.com/
+anthropic_api_key = "sk-ant-api03-XXXXX"  # ⚠️ TROQUE POR SUA CHAVE!
+
+# Chave Tavily (opcional)
+# Obtenha em: https://tavily.com/
+tavily_api_key = "tvly-dev-XXXXX"  # Deixe vazio se não usar: ""
+
+# ----------------------------------------
+# S3 + CloudFront (Frontend)
+# ----------------------------------------
+
+# Nome do bucket S3 (deve ser globalmente único!)
+# Sugestão: use seu username ou random string
+s3_bucket_name = "langgraph-frontend-12345"  # ⚠️ TROQUE POR UM NOME ÚNICO!
+
+# Habilitar CloudFront (recomendado para produção)
+enable_cloudfront = true
+
+# Classe de preço CloudFront
+# PriceClass_100 = mais barato (US, Canadá, Europa)
+# PriceClass_200 = médio (adiciona Ásia, África, Oriente Médio, América do Sul)
+# PriceClass_All = todos os edge locations (mais caro)
+cloudfront_price_class = "PriceClass_100"
+
+# ----------------------------------------
+# Auto Shutdown (Economizar Free Tier)
+# ----------------------------------------
+
+# Habilitar desligamento automático da EC2
+# Útil se você não usa 24/7
+enable_auto_shutdown = false
+
+# Horários em UTC (exemplo: 02:00 = 11PM BRT no horário de verão)
+auto_shutdown_time = "02:00"  # Desliga às 2 AM UTC
+auto_startup_time  = "12:00"  # Liga ao meio-dia UTC
+
+# ----------------------------------------
+# Tags Comuns
+# ----------------------------------------
+
+common_tags = {
+  Project     = "LangGraph Research Agent"
+  ManagedBy   = "Terraform"
+  Environment = "Production"
+  Owner       = "Seu Nome"
+}
+
+# ----------------------------------------
+# NOTAS IMPORTANTES:
+# ----------------------------------------
+
+# 1. NUNCA commite o arquivo terraform.tfvars (contém API keys!)
+#    Ele já está no .gitignore
+
+# 2. CRIE O KEY PAIR SSH antes de rodar terraform:
+#    AWS Console > EC2 > Key Pairs > Create Key Pair
+#    Nome: langgraph-key
+#    Salve o arquivo .pem em ~/.ssh/
+
+# 3. NOME DO BUCKET S3 deve ser globalmente único
+#    Se der erro "BucketAlreadyExists", mude o nome
+
+# 4. PARA DESCOBRIR SEU IP PÚBLICO:
+#    curl ifconfig.me
+#    Depois adicione /32 no final: "123.456.789.0/32"
+
+# 5. FREE TIER LIMITS:
+#    - EC2 t2.micro: 750h/mês (suficiente para 1 instância 24/7)
+#    - S3: 5GB storage
+#    - CloudFront: 50GB data transfer
+#    - Válido por 12 meses após criar conta AWS
