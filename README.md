@@ -2,29 +2,18 @@
 
 Agente de IA construído com **LangGraph** que realiza pesquisas em profundidade, valida informações cruzando múltiplas fontes, e gera relatórios confiáveis com referências.
 
-## 🎨 Interface Visual
+## 🎨 Interface Web
 
-**Novidade!** Agora com interface web interativa!
+O projeto inclui uma interface web moderna construída com **Next.js + shadcn/ui** e backend em **FastAPI**.
 
 ```bash
-# Inicie a interface
-./scripts/start_app.sh
-
-# Ou diretamente
-streamlit run app.py
+# Inicie a stack completa (backend + frontend)
+./scripts/start_nextjs_stack.sh
 ```
 
-**Acesse:** http://localhost:8501
+**Acesse:** http://localhost:3000
 
-### Features da Interface:
-- 🎯 Pesquisa interativa com feedback visual
-- 📊 Gráficos e métricas em tempo real
-- 📚 Visualização de referências e validações
-- 📜 Histórico de pesquisas
-- ⬇️ Download de relatórios
-- 🎨 Design moderno e responsivo
-
-**Documentação completa:** [INTERFACE.md](docs/INTERFACE.md)
+**Documentação completa:** [NEXTJS_GUIDE.md](NEXTJS_GUIDE.md)
 
 ## 🎯 Características
 
@@ -152,26 +141,33 @@ Isso executará:
 
 ```
 langgraph/
-├── src/                  # Código fonte
+├── src/                     # Código fonte
 │   ├── __init__.py
-│   ├── agent.py          # Grafo principal e orquestração
-│   ├── states.py         # Definição de estados (TypedDict)
-│   └── nodes.py          # Implementação dos nós do grafo
-├── tests/                # Testes
+│   ├── agent.py             # Grafo principal e orquestração
+│   ├── states.py            # Definição de estados (TypedDict)
+│   └── nodes.py             # Implementação dos nós do grafo
+├── backend/                 # API FastAPI
+│   └── api.py               # Endpoints da API
+├── frontend/                # Interface Next.js + shadcn/ui
+│   ├── app/                 # App router
+│   ├── components/          # Componentes React
+│   └── lib/                 # Utilitários
+├── tests/                   # Testes
 │   ├── __init__.py
-│   ├── test_agent.py     # Testes do agente
-│   └── test_tavily.py    # Testes da API Tavily
-├── docs/                 # Documentação
-│   ├── INTERFACE.md      # Guia da interface
-│   ├── TAVILY_SETUP.md   # Guia de configuração Tavily
-│   └── QUICKSTART.md     # Guia rápido
-├── scripts/              # Scripts utilitários
-│   └── start_app.sh      # Script para iniciar a interface
-├── app.py                # Interface Streamlit
-├── requirements.txt      # Dependências
-├── .env                  # Variáveis de ambiente (não versionado)
-├── .gitignore            # Arquivos ignorados pelo Git
-└── README.md             # Este arquivo
+│   ├── test_agent.py        # Testes do agente
+│   └── test_tavily.py       # Testes da API Tavily
+├── docs/                    # Documentação
+│   ├── TAVILY_SETUP.md      # Guia de configuração Tavily
+│   └── QUICKSTART.md        # Guia rápido
+├── scripts/                 # Scripts utilitários
+│   ├── start_backend.sh     # Inicia backend FastAPI
+│   ├── start_frontend.sh    # Inicia frontend Next.js
+│   └── start_nextjs_stack.sh # Inicia stack completa
+├── requirements.txt         # Dependências Python
+├── .env                     # Variáveis de ambiente (não versionado)
+├── .gitignore               # Arquivos ignorados pelo Git
+├── NEXTJS_GUIDE.md          # Guia da interface Next.js
+└── README.md                # Este arquivo
 ```
 
 ## 🧩 Componentes
@@ -254,7 +250,6 @@ Por padrão, o agente simula resultados de busca usando o LLM. Para usar busca w
 - [ ] Integração com mais APIs de busca (Serper, Brave, etc)
 - [ ] Sistema de cache de resultados
 - [ ] Exportação de relatórios (PDF, HTML)
-- [ ] Interface web com Streamlit
 - [ ] Suporte a documentos locais (PDFs, etc)
 - [ ] Busca em bases acadêmicas (arXiv, PubMed)
 - [ ] Sistema de citações acadêmicas (ABNT, APA)

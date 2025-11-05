@@ -44,9 +44,6 @@ venv.bak/
 .env.local
 .env.*.local
 
-# Streamlit
-.streamlit/
-
 # Logs
 *.log
 

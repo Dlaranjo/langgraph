@@ -135,15 +135,10 @@ langgraph/
 ├── scripts/
 │   ├── start_nextjs_stack.sh   # Inicia tudo
 │   ├── start_backend.sh        # Só backend
-│   ├── start_frontend.sh       # Só frontend
-│   ├── start_gradio.sh         # Interface Gradio
-│   └── start_app.sh            # Interface Streamlit
+│   └── start_frontend.sh       # Só frontend
 │
 ├── requirements.txt            # Dependências Python
-├── app.py                      # Streamlit (legado)
-├── app_gradio.py              # Gradio (alternativa)
 ├── NEXTJS_GUIDE.md            # Este guia
-├── GRADIO_GUIDE.md            # Guia Gradio
 └── README.md                  # README principal
 ```
 
@@ -294,23 +289,6 @@ uvicorn backend.api:app --host 0.0.0.0 --port 8000
 
 ---
 
-## 📊 Comparação das Interfaces
-
-| Feature | Streamlit | Gradio | **Next.js + shadcn** |
-|---------|-----------|--------|---------------------|
-| **Visual** | Tradicional | Moderno | **Estado da arte** |
-| **Customização** | Baixa | Média | **Total** |
-| **Performance** | Boa | Boa | **Excelente** |
-| **SEO** | Não | Não | **Sim** |
-| **Mobile** | OK | Bom | **Perfeito** |
-| **TypeScript** | Não | Não | **Sim** |
-| **Componentes** | Limitado | Bons | **shadcn/ui** |
-| **Dark Mode** | Básico | OK | **Nativo** |
-| **Deploy** | Fácil | Fácil | **Vercel/Netlify** |
-| **Curva de aprendizado** | Baixa | Baixa | **Média** |
-
----
-
 ## 🔧 Troubleshooting
 
 ### Frontend não inicia
@@ -385,18 +363,17 @@ Melhorias possíveis:
 
 ## ❓ FAQ
 
-**P: Posso usar as 3 interfaces juntas?**
-R: Sim! Rodando em portas diferentes:
-- Streamlit: 8501
-- Gradio: 7860
-- Next.js: 3000
-- Backend: 8000
-
-**P: Qual interface devo usar?**
+**P: Em quais portas a aplicação roda?**
 R:
-- **Protótipo rápido:** Streamlit/Gradio
-- **Produção moderna:** Next.js + shadcn/ui
-- **Máxima beleza:** Next.js + shadcn/ui
+- Frontend (Next.js): http://localhost:3000
+- Backend (FastAPI): http://localhost:8000
+- Documentação da API: http://localhost:8000/docs
+
+**P: Posso rodar apenas o backend ou frontend?**
+R: Sim! Use os scripts individuais:
+- Backend: `./scripts/start_backend.sh`
+- Frontend: `./scripts/start_frontend.sh`
+- Ambos: `./scripts/start_nextjs_stack.sh`
 
 **P: Como adicionar novos componentes shadcn?**
 R: Copie de https://ui.shadcn.com e cole em `components/ui/`

@@ -1,11 +1,15 @@
-# 🚀 Guia Rápido - Interface Visual
+# 🚀 Guia Rápido - Interface Next.js
 
 ## Em 3 Passos
 
 ### 1️⃣ Instale as Dependências
 
 ```bash
+# Dependências Python
 pip install -r requirements.txt --user
+
+# Dependências Node.js
+cd frontend && npm install
 ```
 
 ### 2️⃣ Configure a API Key
@@ -19,13 +23,13 @@ cp .env.example .env
 # Edite .env e adicione sua chave
 ```
 
-### 3️⃣ Inicie a Interface
+### 3️⃣ Inicie a Stack
 
 ```bash
-./start_app.sh
+./scripts/start_nextjs_stack.sh
 ```
 
-**Pronto!** A interface abrirá em http://localhost:8501
+**Pronto!** A interface abrirá em http://localhost:3000
 
 ---
 
@@ -37,28 +41,31 @@ cp .env.example .env
 │        Pesquisa inteligente com validação de fontes            │
 └─────────────────────────────────────────────────────────────────┘
 
-┌──────────────┐  ┌────────────────────────────────────────────┐
-│              │  │                                            │
-│  SIDEBAR     │  │  💭 Faça sua pergunta                      │
-│              │  │  ┌──────────────────────────────────────┐  │
-│  ⚙️ Config   │  │  │                                      │  │
-│  • Iterações │  │  │  Digite sua pergunta aqui...         │  │
-│  • Tavily    │  │  │                                      │  │
-│              │  │  └──────────────────────────────────────┘  │
-│  📊 Status   │  │                                            │
-│  • Confiança │  │  [🚀 Pesquisar]  [🔄 Limpar]             │
-│  • Fontes    │  │                                            │
-│  • Validações│  │  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  │
-│              │  │                                            │
-│  📜 Histórico│  │  📋 Resultados da Pesquisa                │
-│  • Pesquisa 1│  │  ┌──────────────────────────────────────┐ │
-│  • Pesquisa 2│  │  │ Relatório │ Refs │ Análise │ Detalhes│ │
-│  • Pesquisa 3│  │  ├──────────────────────────────────────┤ │
-│              │  │  │                                      │ │
-└──────────────┘  │  │  [Conteúdo da Tab Selecionada]      │ │
-                  │  │                                      │ │
-                  │  └──────────────────────────────────────┘ │
-                  └────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│  💭 Faça sua pergunta                                           │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │                                                          │   │
+│  │  Digite sua pergunta aqui...                             │   │
+│  │                                                          │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                                                                  │
+│  ⚙️ Configurações:                                              │
+│  • Máximo de Iterações: [2 ▼]                                  │
+│  • ☑️ Usar Tavily API (busca real)                             │
+│                                                                  │
+│  [🚀 Pesquisar]  [🔄 Limpar]                                   │
+│                                                                  │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  │
+│                                                                  │
+│  📋 Resultados da Pesquisa                                      │
+│  ┌────────────────────────────────────────────────────────┐    │
+│  │ 📄 Relatório │ 📚 Referências │ 📊 Análise │ 📝 Logs  │    │
+│  ├────────────────────────────────────────────────────────┤    │
+│  │                                                        │    │
+│  │  [Conteúdo da Tab Selecionada]                        │    │
+│  │                                                        │    │
+│  └────────────────────────────────────────────────────────┘    │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -67,7 +74,7 @@ cp .env.example .env
 
 ### Passo a Passo:
 
-1. **Abra a interface** no navegador
+1. **Abra a interface** no navegador (http://localhost:3000)
 
 2. **Digite sua pergunta** no campo principal:
    ```
@@ -76,77 +83,105 @@ cp .env.example .env
 
 3. **Configure** (opcional):
    - Máximo de iterações: `2`
-   - Tavily: `Desativado`
+   - ☑️ Usar Tavily API (busca real)
 
 4. **Clique em Pesquisar** 🚀
 
 5. **Acompanhe o progresso**:
-   ```
-   ████████░░ 80% - Validando informações...
-   ```
+   - A interface mostra o status em tempo real
+   - Indicadores visuais do processo
 
 6. **Visualize os resultados** nas tabs:
-   - **Relatório:** Texto completo em Markdown
-   - **Referências:** Lista de fontes consultadas
-   - **Análise:** Gráficos de confiança e métricas
-   - **Detalhes:** JSON completo e validações
-
-7. **Baixe o relatório** se desejar (botão no final)
+   - **📄 Relatório:** Texto completo em Markdown renderizado
+   - **📚 Referências:** Lista de fontes consultadas com scores
+   - **📊 Análise:** Métricas de confiança e validações
+   - **📝 Logs:** Histórico detalhado da execução
 
 ---
 
-## 🎨 Features Visuais
+## 🎨 Features da Interface
 
-### 📊 Gauge de Confiança
-```
-    100%  ┌─────────────┐
-          │      ██     │
-     75%  │    ██████   │
-          │   ████████  │  ← 85%
-     50%  │  ██████████ │
-          │ ███████████ │
-     25%  │ ███████████ │
-          └─────────────┘
-       0%
-```
+### ✨ Design Moderno
+- Interface limpa e intuitiva com shadcn/ui
+- Tema dark/light automático
+- Componentes acessíveis e responsivos
+- Animações suaves e feedback visual
 
-### 📈 Gráfico de Métricas
-```
- Valor
-   10 ┤     ┌──┐
-    8 ┤     │  │
-    6 ┤     │  │  ┌──┐
-    4 ┤  ┌──┤  ├──┤  │
-    2 ┤  │  │  │  │  │
-    0 └──┴──┴──┴──┴──┴──
-        Fontes  Val  Iter
-```
+### 📊 Visualizações
+- Markdown renderizado com syntax highlighting
+- Cards de referências com scores de confiança
+- Métricas visuais de validação
+- Badges para status e categorias
 
-### 📜 Histórico
+### ⚡ Performance
+- Server-side rendering com Next.js 14
+- API REST com FastAPI (alta performance)
+- Atualizações em tempo real
+- Cache inteligente
+
+---
+
+## 🏗️ Arquitetura
+
 ```
-┌────────────────────────┐
-│ 📜 Histórico          │
-├────────────────────────┤
-│ 🔍 IA generativa...   │
-│    ⏰ 2025-10-29 17:30 │
-│    💯 85%              │
-│    [Recarregar]        │
-├────────────────────────┤
-│ 🔍 Computação quân...  │
-│    ⏰ 2025-10-29 17:25 │
-│    💯 78%              │
-│    [Recarregar]        │
-└────────────────────────┘
+┌──────────────┐    HTTP/REST    ┌──────────────┐
+│              │ ───────────────> │              │
+│  Next.js     │                  │   FastAPI    │
+│  Frontend    │ <─────────────── │   Backend    │
+│              │     JSON         │              │
+└──────────────┘                  └──────────────┘
+   Port 3000                         Port 8000
+                                         │
+                                         ▼
+                                  ┌──────────────┐
+                                  │  LangGraph   │
+                                  │  Agent       │
+                                  └──────────────┘
 ```
 
 ---
 
-## ⌨️ Atalhos
+## ⌨️ Comandos Úteis
 
-- **Ctrl + Enter**: Executar pesquisa (foco no campo)
-- **Ctrl + R**: Recarregar página
-- **Ctrl + C** (terminal): Parar servidor
-- **?**: Ajuda (na interface)
+### Desenvolvimento
+
+```bash
+# Iniciar apenas o backend
+./scripts/start_backend.sh
+
+# Iniciar apenas o frontend
+./scripts/start_frontend.sh
+
+# Iniciar stack completa
+./scripts/start_nextjs_stack.sh
+```
+
+### Frontend (Next.js)
+
+```bash
+cd frontend
+
+# Desenvolvimento
+npm run dev
+
+# Build de produção
+npm run build
+
+# Iniciar produção
+npm start
+```
+
+### Backend (FastAPI)
+
+```bash
+cd backend
+
+# Desenvolvimento
+python api.py
+
+# Verificar documentação da API
+# Abra: http://localhost:8000/docs
+```
 
 ---
 
@@ -157,21 +192,28 @@ cp .env.example .env
 export ANTHROPIC_API_KEY="sua-chave"
 ```
 
-### Porta 8501 em uso
+### Porta 3000 ou 8000 em uso
 ```bash
-streamlit run app.py --server.port 8502
+# Encontre o processo
+lsof -i :3000
+lsof -i :8000
+
+# Mate o processo
+kill -9 [PID]
 ```
 
-### Gráficos não aparecem
+### Módulos não encontrados (Frontend)
 ```bash
-pip install plotly --user
+cd frontend
+rm -rf node_modules package-lock.json
+npm install
 ```
 
-### Interface não carrega
+### Erro de conexão Backend-Frontend
+Verifique se o backend está rodando em http://localhost:8000
+
 ```bash
-# Limpe o cache
-rm -rf ~/.streamlit/
-streamlit cache clear
+curl http://localhost:8000/health
 ```
 
 ---
@@ -198,26 +240,14 @@ Configuração → Máximo de iterações: 2
 
 ---
 
-## 📱 Acesso Remoto
-
-Para acessar de outro dispositivo na rede:
-
-```bash
-streamlit run app.py --server.address 0.0.0.0
-```
-
-Acesse via: `http://[seu-ip]:8501`
-
----
-
 ## 🎓 Próximos Passos
 
 1. Teste com diferentes tipos de perguntas
-2. Explore as visualizações e métricas
+2. Explore as tabs de resultados
 3. Compare resultados com diferentes configurações
-4. Baixe e compartilhe relatórios
+4. Leia a documentação completa: [NEXTJS_GUIDE.md](../NEXTJS_GUIDE.md)
 5. Contribua com melhorias!
 
 ---
 
-**Pronto para começar? Execute:** `./start_app.sh` 🚀
+**Pronto para começar? Execute:** `./scripts/start_nextjs_stack.sh` 🚀
