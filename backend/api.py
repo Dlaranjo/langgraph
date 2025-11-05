@@ -117,9 +117,17 @@ async def research(request: ResearchRequest):
         return result
 
     except Exception as e:
+        import traceback
+        error_details = {
+            "error": str(e),
+            "type": type(e).__name__,
+            "traceback": traceback.format_exc()
+        }
+        print(f"\n❌ ERRO NO BACKEND:\n{error_details['traceback']}")
+
         raise HTTPException(
             status_code=500,
-            detail=f"Erro durante a pesquisa: {str(e)}"
+            detail=f"Erro durante a pesquisa: {str(e)}\nTipo: {type(e).__name__}"
         )
 
 @app.get("/api/config")

@@ -11,7 +11,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Loader2, Search, Download, CheckCircle2, AlertCircle, XCircle } from "lucide-react"
+import { Loader2, Search, Download, CheckCircle2, AlertCircle, XCircle, RotateCcw } from "lucide-react"
+import { HelpPanel } from "@/components/HelpPanel"
+import { ExampleQueries } from "@/components/ExampleQueries"
+import { InfoTooltip } from "@/components/InfoTooltip"
+import { OnboardingTour, useOnboardingTour } from "@/components/OnboardingTour"
 
 interface ResearchResult {
   query: string
@@ -49,6 +53,14 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<ResearchResult | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const { resetOnboarding } = useOnboardingTour()
+
+  const handleSelectExample = (exampleQuery: string, iterations: number) => {
+    setQuery(exampleQuery)
+    setMaxIterations(iterations)
+    // Scroll suave para o campo de query
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const handleSearch = async () => {
     if (!query.trim() || !anthropicKey.trim()) {
@@ -100,15 +112,30 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <OnboardingTour />
       <div className="container mx-auto py-10 px-4 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-            🔬 Agente Pesquisador IA
-          </h1>
-          <p className="text-muted-foreground text-lg">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              🔬 Agente Pesquisador IA
+            </h1>
+          </div>
+          <p className="text-muted-foreground text-lg mb-4">
             Pesquisa inteligente com validação de fontes e geração de relatórios
           </p>
+          <div className="flex items-center justify-center gap-2">
+            <HelpPanel />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetOnboarding}
+              className="gap-2"
+            >
+              <RotateCcw className="h-4 w-4" />
+              Ver Tour Novamente
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -393,7 +420,28 @@ export default function Home() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="anthropic-key">ANTHROPIC_API_KEY *</Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="anthropic-key">ANTHROPIC_API_KEY *</Label>
+                    <InfoTooltip
+                      content={
+                        <div>
+                          <p className="font-semibold mb-1">API Key da Anthropic</p>
+                          <p className="mb-2">Necessária para usar o modelo Claude.</p>
+                          <p className="text-xs">
+                            Obtenha em:{" "}
+                            <a
+                              href="https://console.anthropic.com/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="underline"
+                            >
+                              console.anthropic.com
+                            </a>
+                          </p>
+                        </div>
+                      }
+                    />
+                  </div>
                   <Input
                     id="anthropic-key"
                     type="password"
@@ -406,7 +454,22 @@ export default function Home() {
                 <Separator />
 
                 <div className="space-y-2">
-                  <Label htmlFor="iterations">Máximo de Iterações</Label>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="iterations">Máximo de Iterações</Label>
+                    <InfoTooltip
+                      content={
+                        <div>
+                          <p className="font-semibold mb-1">Ciclos de Pesquisa</p>
+                          <ul className="space-y-1 text-xs">
+                            <li><strong>1 iteração:</strong> Rápida, ideal para perguntas simples</li>
+                            <li><strong>2 iterações:</strong> Balanceada, boa para análises comparativas</li>
+                            <li><strong>3 iterações:</strong> Completa, máxima confiabilidade</li>
+                          </ul>
+                          <p className="mt-2 text-xs text-yellow-200">⚠️ Mais iterações = mais tempo e custo</p>
+                        </div>
+                      }
+                    />
+                  </div>
                   <Input
                     id="iterations"
                     type="number"
@@ -428,7 +491,31 @@ export default function Home() {
                     onChange={(e) => setUseTavily(e.target.checked)}
                     className="rounded"
                   />
-                  <Label htmlFor="use-tavily">Usar Tavily API (busca real)</Label>
+                  <Label htmlFor="use-tavily" className="flex items-center gap-2">
+                    Usar Tavily API (busca real)
+                    <InfoTooltip
+                      content={
+                        <div>
+                          <p className="font-semibold mb-1">Busca Web Real</p>
+                          <p className="mb-2">
+                            Com Tavily, o agente busca informações reais da web.
+                            Sem Tavily, simula resultados usando conhecimento do modelo.
+                          </p>
+                          <p className="text-xs">
+                            Grátis: 1.000 buscas/mês em{" "}
+                            <a
+                              href="https://tavily.com/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="underline"
+                            >
+                              tavily.com
+                            </a>
+                          </p>
+                        </div>
+                      }
+                    />
+                  </Label>
                 </div>
 
                 {useTavily && (
@@ -488,6 +575,9 @@ export default function Home() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Example Queries */}
+            <ExampleQueries onSelectQuery={handleSelectExample} />
           </div>
         </div>
 

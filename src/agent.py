@@ -118,22 +118,41 @@ class ResearchAgent:
         }
 
         # Executa o grafo
-        final_state = self.graph.invoke(initial_state)
+        try:
+            final_state = self.graph.invoke(initial_state)
 
-        print("\n" + "="*80)
-        print("✅ PESQUISA CONCLUÍDA")
-        print("="*80)
+            print("\n" + "="*80)
+            print("✅ PESQUISA CONCLUÍDA")
+            print("="*80)
 
-        return {
-            "report": final_state["final_report"],
-            "references": final_state["references"],
-            "confidence": final_state["confidence_level"],
-            "search_results_count": len(final_state["search_results"]),
-            "validations_count": len(final_state["validations"]),
-            "conflicts_detected": final_state["conflicts_detected"],
-            "iterations": final_state["current_iteration"],
-            "full_state": final_state
-        }
+            # Garante que todos os campos existem com valores padrão
+            return {
+                "report": final_state.get("final_report", "Erro ao gerar relatório"),
+                "references": final_state.get("references", []),
+                "confidence": final_state.get("confidence_level", 0.0),
+                "search_results_count": len(final_state.get("search_results", [])),
+                "validations_count": len(final_state.get("validations", [])),
+                "conflicts_detected": final_state.get("conflicts_detected", False),
+                "iterations": final_state.get("current_iteration", 0),
+                "full_state": final_state
+            }
+
+        except Exception as e:
+            print(f"\n❌ ERRO NO GRAFO: {e}")
+            import traceback
+            traceback.print_exc()
+
+            # Retorna erro estruturado
+            return {
+                "report": f"# Erro ao Executar Pesquisa\n\nOcorreu um erro durante a pesquisa: {str(e)}",
+                "references": [],
+                "confidence": 0.0,
+                "search_results_count": 0,
+                "validations_count": 0,
+                "conflicts_detected": False,
+                "iterations": 0,
+                "full_state": {"error": str(e)}
+            }
 
     async def aresearch(self, query: str, max_iterations: Optional[int] = None) -> dict:
         """Versão assíncrona de research()"""
