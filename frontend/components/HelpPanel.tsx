@@ -58,14 +58,12 @@ export function HelpPanel() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Preciso de API keys?</CardTitle>
+                <CardTitle className="text-lg">Preciso de API key?</CardTitle>
               </CardHeader>
               <CardContent className="text-sm space-y-2">
                 <p><strong>ANTHROPIC_API_KEY (obrigatória):</strong></p>
                 <p className="ml-2">Necessária para o modelo de IA (Claude). Obtenha em: <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer" className="text-purple-600 underline">console.anthropic.com</a></p>
-
-                <p className="mt-3"><strong>TAVILY_API_KEY (opcional):</strong></p>
-                <p className="ml-2">Para buscas web reais. Sem ela, o agente simula resultados. Obtenha em: <a href="https://tavily.com/" target="_blank" rel="noopener noreferrer" className="text-purple-600 underline">tavily.com</a> (1.000 créditos grátis/mês)</p>
+                <p className="ml-2 mt-2 text-muted-foreground">💡 Novos usuários recebem créditos iniciais para testar a API.</p>
               </CardContent>
             </Card>
 
@@ -204,11 +202,16 @@ export function HelpPanel() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">💡 Ative Tavily para informações atuais</CardTitle>
+                <CardTitle className="text-lg">💡 Comece com exemplos prontos</CardTitle>
               </CardHeader>
               <CardContent className="text-sm">
-                <p>Para perguntas sobre eventos recentes, tecnologias emergentes ou dados atualizados, marque a opção "Usar Tavily API" para obter resultados de busca reais.</p>
-                <p className="text-muted-foreground mt-2">Sem Tavily, o agente simula resultados baseado no conhecimento do modelo de IA.</p>
+                <p>Na área de pesquisa, você encontrará exemplos de perguntas prontos para usar. Clique em qualquer exemplo para:</p>
+                <ul className="list-disc list-inside space-y-1 mt-2">
+                  <li>Preencher automaticamente o campo de pergunta</li>
+                  <li>Configurar o número ideal de iterações</li>
+                  <li>Ver exemplos de boas práticas de formulação</li>
+                </ul>
+                <p className="text-muted-foreground mt-2">Use os exemplos para aprender e depois crie suas próprias perguntas!</p>
               </CardContent>
             </Card>
 

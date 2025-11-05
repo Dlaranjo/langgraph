@@ -27,7 +27,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
   },
   {
     title: "1. Configure sua API Key 🔑",
-    description: "Você precisará de uma ANTHROPIC_API_KEY para usar o modelo Claude. Obtenha gratuitamente em console.anthropic.com e adicione no painel de configurações.",
+    description: "Você precisará de uma ANTHROPIC_API_KEY para usar o modelo Claude. Obtenha em console.anthropic.com e adicione no painel de configurações.",
     icon: <div className="text-6xl">🔑</div>
   },
   {
