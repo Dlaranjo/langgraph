@@ -7,13 +7,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { TextareaWithButton } from "@/components/ui/textarea-with-button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Loader2, Search, Download, CheckCircle2, AlertCircle, XCircle, RotateCcw } from "lucide-react"
 import { HelpPanel } from "@/components/HelpPanel"
-import { ExampleQueries } from "@/components/ExampleQueries"
+import { QuickExamples } from "@/components/QuickExamples"
 import { InfoTooltip } from "@/components/InfoTooltip"
 import { OnboardingTour, useOnboardingTour } from "@/components/OnboardingTour"
 
@@ -47,9 +47,7 @@ interface ResearchResult {
 export default function Home() {
   const [query, setQuery] = useState("")
   const [anthropicKey, setAnthropicKey] = useState("")
-  const [tavilyKey, setTavilyKey] = useState("")
   const [maxIterations, setMaxIterations] = useState(1)
-  const [useTavily, setUseTavily] = useState(false)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<ResearchResult | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -58,8 +56,6 @@ export default function Home() {
   const handleSelectExample = (exampleQuery: string, iterations: number) => {
     setQuery(exampleQuery)
     setMaxIterations(iterations)
-    // Scroll suave para o campo de query
-    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleSearch = async () => {
@@ -82,7 +78,6 @@ export default function Home() {
           query,
           max_iterations: maxIterations,
           anthropic_api_key: anthropicKey,
-          tavily_api_key: useTavily ? tavilyKey : null,
         }),
       })
 
@@ -146,58 +141,47 @@ export default function Home() {
               <CardHeader>
                 <CardTitle>💭 Faça sua pergunta</CardTitle>
                 <CardDescription>
-                  Digite uma pergunta e nosso agente irá pesquisar e validar as informações
+                  Digite uma pergunta e pressione Enter (ou clique no botão) para pesquisar
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="query">Pergunta de Pesquisa</Label>
-                  <Textarea
+                <div className="space-y-3">
+                  <TextareaWithButton
                     id="query"
-                    placeholder="Ex: Quais são os principais benefícios e riscos da inteligência artificial generativa?"
+                    placeholder="Digite sua pergunta aqui... (Enter para enviar, Shift+Enter para nova linha)"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    rows={3}
-                    className="resize-none"
+                    onSubmit={handleSearch}
+                    loading={loading}
+                    submitDisabled={!query.trim() || !anthropicKey.trim()}
+                    rows={4}
                   />
-                </div>
 
-                <div className="flex gap-3">
-                  <Button
-                    onClick={handleSearch}
-                    disabled={loading}
-                    className="flex-1"
-                    size="lg"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Pesquisando...
-                      </>
-                    ) : (
-                      <>
-                        <Search className="mr-2 h-4 w-4" />
-                        Pesquisar
-                      </>
-                    )}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setQuery("")
-                      setResult(null)
-                      setError(null)
-                    }}
-                    size="lg"
-                  >
-                    Limpar
-                  </Button>
+                  {/* Quick examples (pills) - sempre visível quando não há resultado/loading */}
+                  {!result && !loading && (
+                    <QuickExamples onSelect={handleSelectExample} />
+                  )}
                 </div>
 
                 {error && (
                   <div className="p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20">
-                    <p className="font-semibold">❌ Erro:</p>
+                    <p className="font-semibold flex items-center gap-2">
+                      <XCircle className="h-4 w-4" />
+                      Erro
+                    </p>
                     <p className="text-sm mt-1">{error}</p>
+                  </div>
+                )}
+
+                {loading && (
+                  <div className="p-4 bg-purple-50 text-purple-900 rounded-lg border border-purple-200">
+                    <p className="font-semibold flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Pesquisando...
+                    </p>
+                    <p className="text-sm mt-1">
+                      O agente está coletando e validando informações. Isso pode levar alguns instantes.
+                    </p>
                   </div>
                 )}
               </CardContent>
@@ -226,32 +210,32 @@ export default function Home() {
                     </TabsList>
 
                     <TabsContent value="report" className="space-y-4">
-                      <div className="prose prose-lg prose-purple max-w-none prose-headings:font-bold prose-headings:text-purple-900 prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-p:text-gray-700 prose-a:text-purple-600 prose-a:underline hover:prose-a:text-purple-800 prose-strong:text-purple-800 prose-strong:font-bold prose-ul:list-disc prose-ol:list-decimal prose-li:text-gray-700 prose-code:text-purple-700 prose-code:bg-purple-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-blockquote:border-l-purple-500 prose-blockquote:italic">
+                      <div className="prose prose-slate max-w-none">
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
                           components={{
-                            h1: ({node, ...props}) => <h1 className="text-4xl font-bold text-purple-900 mt-8 mb-4" {...props} />,
-                            h2: ({node, ...props}) => <h2 className="text-3xl font-bold text-purple-800 mt-6 mb-3" {...props} />,
-                            h3: ({node, ...props}) => <h3 className="text-2xl font-semibold text-purple-700 mt-4 mb-2" {...props} />,
-                            h4: ({node, ...props}) => <h4 className="text-xl font-semibold text-purple-600 mt-3 mb-2" {...props} />,
-                            p: ({node, ...props}) => <p className="text-gray-700 leading-relaxed mb-4" {...props} />,
-                            ul: ({node, ...props}) => <ul className="list-disc list-inside mb-4 space-y-2" {...props} />,
-                            ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-4 space-y-2" {...props} />,
-                            li: ({node, ...props}) => <li className="text-gray-700 ml-4" {...props} />,
-                            strong: ({node, ...props}) => <strong className="font-bold text-purple-800" {...props} />,
-                            em: ({node, ...props}) => <em className="italic text-gray-700" {...props} />,
-                            a: ({node, ...props}) => <a className="text-purple-600 underline hover:text-purple-800 transition-colors" {...props} target="_blank" rel="noopener noreferrer" />,
+                            h1: ({node, ...props}) => <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-6 mb-3 pb-2 border-b border-gray-200" {...props} />,
+                            h2: ({node, ...props}) => <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mt-5 mb-2.5" {...props} />,
+                            h3: ({node, ...props}) => <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-4 mb-2" {...props} />,
+                            h4: ({node, ...props}) => <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300 mt-3 mb-1.5" {...props} />,
+                            p: ({node, ...props}) => <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-7 mb-3" {...props} />,
+                            ul: ({node, ...props}) => <ul className="list-disc ml-6 mb-3 space-y-1" {...props} />,
+                            ol: ({node, ...props}) => <ol className="list-decimal ml-6 mb-3 space-y-1" {...props} />,
+                            li: ({node, ...props}) => <li className="text-[15px] text-gray-700 dark:text-gray-300 leading-7" {...props} />,
+                            strong: ({node, ...props}) => <strong className="font-semibold text-gray-900 dark:text-gray-100" {...props} />,
+                            em: ({node, ...props}) => <em className="italic text-gray-700 dark:text-gray-300" {...props} />,
+                            a: ({node, ...props}) => <a className="text-purple-600 dark:text-purple-400 underline hover:text-purple-800 dark:hover:text-purple-300 transition-colors" {...props} target="_blank" rel="noopener noreferrer" />,
                             code: ({node, inline, ...props}: any) =>
                               inline
-                                ? <code className="bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
-                                : <code className="block bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto font-mono text-sm" {...props} />,
-                            pre: ({node, ...props}) => <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto mb-4" {...props} />,
-                            blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-purple-500 pl-4 italic text-gray-600 my-4" {...props} />,
-                            hr: ({node, ...props}) => <hr className="border-gray-300 my-8" {...props} />,
-                            table: ({node, ...props}) => <div className="overflow-x-auto mb-4"><table className="min-w-full border-collapse border border-gray-300" {...props} /></div>,
-                            thead: ({node, ...props}) => <thead className="bg-purple-100" {...props} />,
-                            th: ({node, ...props}) => <th className="border border-gray-300 px-4 py-2 text-left font-semibold text-purple-900" {...props} />,
-                            td: ({node, ...props}) => <td className="border border-gray-300 px-4 py-2 text-gray-700" {...props} />,
+                                ? <code className="bg-gray-100 dark:bg-gray-800 text-purple-600 dark:text-purple-400 px-1.5 py-0.5 rounded text-[13px] font-mono" {...props} />
+                                : <code className="block bg-gray-900 dark:bg-gray-950 text-gray-100 p-3 rounded-md overflow-x-auto font-mono text-[13px] leading-6" {...props} />,
+                            pre: ({node, ...props}) => <pre className="bg-gray-900 dark:bg-gray-950 rounded-md overflow-hidden mb-3 shadow-sm" {...props} />,
+                            blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-purple-400 dark:border-purple-600 pl-4 py-1 italic text-gray-600 dark:text-gray-400 my-3 bg-purple-50/50 dark:bg-purple-950/20" {...props} />,
+                            hr: ({node, ...props}) => <hr className="border-gray-200 dark:border-gray-700 my-6" {...props} />,
+                            table: ({node, ...props}) => <div className="overflow-x-auto mb-4 rounded-md border border-gray-200 dark:border-gray-700"><table className="min-w-full border-collapse" {...props} /></div>,
+                            thead: ({node, ...props}) => <thead className="bg-gray-50 dark:bg-gray-800" {...props} />,
+                            th: ({node, ...props}) => <th className="border-b border-gray-200 dark:border-gray-700 px-4 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-100" {...props} />,
+                            td: ({node, ...props}) => <td className="border-b border-gray-200 dark:border-gray-700 px-4 py-2 text-sm text-gray-700 dark:text-gray-300" {...props} />,
                           }}
                         >
                           {result.report}
@@ -482,54 +466,6 @@ export default function Home() {
                     Número de ciclos de busca e validação (1-3)
                   </p>
                 </div>
-
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="use-tavily"
-                    checked={useTavily}
-                    onChange={(e) => setUseTavily(e.target.checked)}
-                    className="rounded"
-                  />
-                  <Label htmlFor="use-tavily" className="flex items-center gap-2">
-                    Usar Tavily API (busca real)
-                    <InfoTooltip
-                      content={
-                        <div>
-                          <p className="font-semibold mb-1">Busca Web Real</p>
-                          <p className="mb-2">
-                            Com Tavily, o agente busca informações reais da web.
-                            Sem Tavily, simula resultados usando conhecimento do modelo.
-                          </p>
-                          <p className="text-xs">
-                            Grátis: 1.000 buscas/mês em{" "}
-                            <a
-                              href="https://tavily.com/"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="underline"
-                            >
-                              tavily.com
-                            </a>
-                          </p>
-                        </div>
-                      }
-                    />
-                  </Label>
-                </div>
-
-                {useTavily && (
-                  <div className="space-y-2">
-                    <Label htmlFor="tavily-key">Tavily API Key</Label>
-                    <Input
-                      id="tavily-key"
-                      type="password"
-                      placeholder="tvly-..."
-                      value={tavilyKey}
-                      onChange={(e) => setTavilyKey(e.target.value)}
-                    />
-                  </div>
-                )}
               </CardContent>
             </Card>
 
@@ -575,9 +511,6 @@ export default function Home() {
                 </CardContent>
               </Card>
             )}
-
-            {/* Example Queries */}
-            <ExampleQueries onSelectQuery={handleSelectExample} />
           </div>
         </div>
 

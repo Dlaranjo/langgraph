@@ -26,8 +26,8 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
     icon: <Rocket className="h-12 w-12 text-purple-600" />
   },
   {
-    title: "1. Configure suas API Keys 🔑",
-    description: "Você precisará de uma ANTHROPIC_API_KEY (obrigatória) para usar o Claude. Opcionalmente, adicione uma TAVILY_API_KEY para buscas web reais.",
+    title: "1. Configure sua API Key 🔑",
+    description: "Você precisará de uma ANTHROPIC_API_KEY para usar o modelo Claude. Obtenha gratuitamente em console.anthropic.com e adicione no painel de configurações.",
     icon: <div className="text-6xl">🔑</div>
   },
   {
